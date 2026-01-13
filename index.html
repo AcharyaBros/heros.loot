@@ -22,6 +22,54 @@
             overflow: hidden;
         }
 
+        /* ---------- LOGIN OVERLAY ---------- */
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        #login-box {
+            background: var(--ui-bg);
+            padding: 40px 60px;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 0 20px #ffd70088;
+        }
+        #login-box h1 {
+            margin-top: 0;
+            font-size: 2.2rem;
+            color: var(--accent);
+        }
+        #login-box input {
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            border: 2px solid #555;
+            border-radius: 6px;
+            background: #222;
+            color: white;
+            margin: 20px 0;
+            width: 260px;
+            text-align: center;
+        }
+        #login-box button {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 6px;
+            background: var(--accent);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        #login-box button:hover { background: #ffe55c; }
+        /* ---------- END LOGIN ---------- */
+
         /* Stats Bar */
         #top-bar {
             width: 100%;
@@ -32,7 +80,6 @@
             border-bottom: 3px solid #444;
             font-size: 1.2rem;
         }
-
         .stat-box span { color: var(--accent); font-weight: bold; }
 
         /* Game Stage */
@@ -45,12 +92,67 @@
             border: 4px solid #555;
             overflow: hidden;
         }
+    </style>
+</head>
+<body>
 
-      
+<!-- ========= LOGIN SCREEN ========= -->
+<div id="login-overlay">
+    <div id="login-box">
+        <h1>Meme Defense</h1>
+        <input id="username-input" maxlength="20" placeholder="Enter username" autocomplete="off">
+        <br>
+        <button id="login-btn">Start Game</button>
+    </div>
+</div>
+<!-- ================================= -->
 
-  
+<!-- rest of your original HTML (top-bar, game-container, etc.) goes here -->
+<!-- (paste everything you already had) -->
 
+<script>
+/* ---------- LOGIN LOGIC ---------- */
+const overlay = document.getElementById('login-overlay');
+const input   = document.getElementById('username-input');
+const button  = document.getElementById('login-btn');
 
-    <script src="script.js"></script>
+let currentUser = null;                       // will hold the username
+
+button.addEventListener('click', login);
+input.addEventListener('keydown', e => e.key==='Enter' && login());
+
+function login(){
+    const name = input.value.trim();
+    if(!name){ input.focus(); return; }
+    currentUser = name;
+    overlay.style.display = 'none';           // hide login
+    initGame();                               // start your normal game
+}
+
+/* ---------- SAVE / LOAD HELPERS ---------- */
+// usage: saveData('heroes', heroArray)
+// usage: loadData('heroes') -> heroArray or null
+function saveData(key, value){
+    localStorage.setItem(`${currentUser}_${key}`, JSON.stringify(value));
+}
+function loadData(key){
+    const raw = localStorage.getItem(`${currentUser}_${key}`);
+    return raw ? JSON.parse(raw) : null;
+}
+
+/* ---------- GAME START ---------- */
+function initGame(){
+    // load any existing player data
+    const savedHeroes = loadData('heroes');
+    const savedMoney  = loadData('money') ?? 0;
+
+    console.log(`Loaded save for ${currentUser}:`, {savedHeroes, savedMoney});
+
+    // TODO: pass these values into your normal game init inside script.js
+    // example: window.startGame(savedHeroes, savedMoney);
+}
+</script>
+
+<script src="script.js"></script>
 </body>
 </html>
